@@ -12,11 +12,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 LOCAL_DATA_DIR = BASE_DIR / "data"
 FALLBACK_DATA_DIR = BASE_DIR.parent / "timing_project" / "data"
 
-# 数据路径: 优先环境变量，其次本地 data/ 目录，最后回退至上级工程 data/
+# 数据路径: 优先环境变量，其次检查本地 data/ 目录下是否包含真实行情 parquet，最后回退至上级工程 data/
 env_data_dir = os.environ.get("HUATAI_DATA_DIR")
-if env_data_dir:
+if env_data_dir and Path(env_data_dir).exists():
     DATA_DIR = Path(env_data_dir)
-elif LOCAL_DATA_DIR.exists() and any(LOCAL_DATA_DIR.iterdir()):
+elif (LOCAL_DATA_DIR / "index" / "index_daily_bars.parquet").exists():
     DATA_DIR = LOCAL_DATA_DIR
 else:
     DATA_DIR = FALLBACK_DATA_DIR
